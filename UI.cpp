@@ -129,7 +129,7 @@ void ListBody::render(Adafruit_SSD1306 &disp, int x, int y, int w, int h)
         int barHeight = (maxVisible * h) / items.size(); // tamaño proporcional
         int barY = y + (topIndex * h) / items.size();    // posición proporcional
         int barX = x + w - 3;                            // a la derecha del área de la lista
-        disp.fillRect(barX, barY, 2, barHeight, WHITE);
+        disp.fillRect(barX, barY, 1, barHeight, WHITE);
     }
 }
 
@@ -219,7 +219,7 @@ void WindowManager::render(Adafruit_SSD1306 &disp)
     Body *b = current();
     if (b)
     {
-        b->render(disp, 0, NAVBAR_HEIGHT, disp.width(), disp.height() - NAVBAR_HEIGHT);
+        b->render(disp, 0, NAVBAR_HEIGHT + 2, disp.width(), disp.height() - NAVBAR_HEIGHT - 4);
     }
 
     // Fondo del navbar
