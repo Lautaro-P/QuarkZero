@@ -7,6 +7,7 @@
 #include "UI.h"
 #include "Input.h"
 #include "Icons.h"
+#include "SDManager.h"
 
 #define PIN_SD_CS 10
 
@@ -22,47 +23,7 @@ ListBody menu;
 ListBody sdMenu;
 
 Input input;
-
-void loadFolder(ListBody &menu, const char *path)
-{
-  menu.items.clear();
-
-  menu.items.push_back({"..", &iconBack, []()
-                        {
-                          wm.pop();
-                        }});
-
-  menu.currentIndex = 0;
-
-  File root = SD.open(path);
-  if (!root || !root.isDirectory())
-  {
-    Serial.println("No es carpeta");
-    return;
-  }
-
-  File file = root.openNextFile();
-  while (file)
-  {
-    String name = file.name();
-    if (file.isDirectory())
-    {
-      menu.items.push_back({name, &iconFolder, [name]()
-                            {
-                              loadFolder(sdMenu, name.c_str());
-                              wm.push(&sdMenu);
-                            }});
-    }
-    else
-    {
-      menu.items.push_back({name, &iconFile, [name]()
-                            {
-                              Serial.printf("Abrir archivo: %s\n", name.c_str());
-                            }});
-    }
-    file = root.openNextFile();
-  }
-}
+SDManager sdManager(PIN_SD_CS, wm);
 
 void setup()
 {
@@ -77,12 +38,19 @@ void setup()
   }
   wm.navbar.title = "Inicio";
 
-  menu.items = {
-      {"SD", &iconSD, []()
+  if (!sdManager.begin()) {
+    Serial.println("No hay SD al inicio");
+  }
+
+  if (sdManager.isInserted()) {
+    menu.items.push_back({"SD", &iconSD, []()
        {
-         loadFolder(sdMenu, "/");
+         sdManager.loadFolder(sdMenu, "/");
          wm.push(&sdMenu);
-       }},
+       }});
+  }
+
+  menu.items = {
       {"Bluetooth", &iconBT, []()
        { Serial.println("BT"); }},
       {"IR", &iconIrLed, []()
@@ -100,15 +68,6 @@ void setup()
   wm.push(&menu);
 
   wm.navbar.setIcon(&iconBatteryFull);
-  if (!SD.begin(PIN_SD_CS))
-  {
-    Serial.println("SD Mount Failed");
-    wm.navbar.setIcon(&iconSDFail);
-  }
-  else
-  {
-    wm.navbar.setIcon(&iconSDMounted);
-  }
   wm.render(display);
 }
 
