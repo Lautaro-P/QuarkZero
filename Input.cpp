@@ -1,12 +1,10 @@
 #include "Input.h"
 #include "Arduino.h"
 
-#define PIN_UP 40
-#define PIN_DOWN 37
+#define PIN_UP 37
+#define PIN_DOWN 38
 #define PIN_LEFT 39
-#define PIN_RIGHT 38
-#define PIN_ENTER 35
-#define PIN_BACK 36
+#define PIN_RIGHT 40
 
 Input::Input()
 {
@@ -14,34 +12,11 @@ Input::Input()
     pinMode(PIN_DOWN, INPUT_PULLUP);
     pinMode(PIN_LEFT, INPUT_PULLUP);
     pinMode(PIN_RIGHT, INPUT_PULLUP);
-    pinMode(PIN_ENTER, INPUT_PULLUP);
-    pinMode(PIN_BACK, INPUT_PULLUP);
 }
 
 UIAction Input::handle()
 {
     unsigned long now = millis();
-
-    // --- Prioridad: ENTER y BACK, una sola vez por pulsación ---
-    if (digitalRead(PIN_ENTER) == LOW)
-    {
-        if (lastDir != ACTION_ENTER)
-        {
-            lastDir = ACTION_ENTER;
-            return ACTION_ENTER;
-        }
-        return ACTION_NONE; // mantenido
-    }
-
-    if (digitalRead(PIN_BACK) == LOW)
-    {
-        if (lastDir != ACTION_BACK)
-        {
-            lastDir = ACTION_BACK;
-            return ACTION_BACK;
-        }
-        return ACTION_NONE; // mantenido
-    }
 
     // --- Si no hay ENTER/BACK, procesamos direcciones ---
     int dx = 0;

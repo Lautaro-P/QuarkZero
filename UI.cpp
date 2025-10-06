@@ -143,15 +143,6 @@ void ListBody::handleInput(UIAction a)
     case ACTION_DOWN:
         down();
         break;
-    case ACTION_ENTER:
-        if (currentIndex >= 0 && currentIndex < items.size())
-        {
-            if (items[currentIndex].callback)
-            {
-                items[currentIndex].callback();
-            }
-        }
-        break;
     case ACTION_RIGHT:
         if (currentIndex >= 0 && currentIndex < items.size())
         {
